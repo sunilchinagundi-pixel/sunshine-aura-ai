@@ -85,6 +85,10 @@ offers = [
 # Routes
 @app.get("/")
 def root():
+    dist_path = os.path.join(os.path.dirname(__file__), "dist")
+    index_path = os.path.join(dist_path, "index.html")
+    if os.path.isfile(index_path):
+        return FileResponse(index_path)
     return {"message": "Welcome to Sunshine Aura AI", "version": "0.1.0"}
 
 @app.post("/api/register")
