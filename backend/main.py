@@ -1,8 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from enum import Enum
 from typing import List
+import os
 
 app = FastAPI(
     title="Sunshine Aura AI Backend",
@@ -13,11 +16,14 @@ app = FastAPI(
 # Enable CORS for React frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000", "*"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Mount static files
+app.mount("/static", StaticFiles(directory="dist"), name="static")
 
 # Models
 class Role(str, Enum):
@@ -137,6 +143,21 @@ def get_pricing():
 def get_all_users():
     return [UserResponse(id=u["id"], name=u["name"], email=u["email"], role=u["role"]) for u in users]
 
+# Serve React app
+@app.get("/{full_path:path}")
+async def serve_react_app(full_path: str):
+    if full_path.startswith("api/"):
+        return {"error": "API route not found"}
+    dist_path = os.path.join(os.path.dirname(__file__), "dist")
+    file_path = os.path.join(dist_path, full_path)
+    if os.path.isfile(file_path):
+        return FileResponse(file_path)
+    # Serve index.html for SPA routing
+    index_path = os.path.join(dist_path, "index.html")
+    if os.path.isfile(index_path):
+        return FileResponse(index_path)
+    return {"error": "File not found"}
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
