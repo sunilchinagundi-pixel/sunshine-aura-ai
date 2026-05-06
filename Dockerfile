@@ -1,16 +1,20 @@
-FROM python:3.11-slim
+FROM node:20-alpine AS frontend-build
+WORKDIR /app
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm install
+COPY frontend/ ./
+RUN npm run build
 
+FROM python:3.11-slim
 WORKDIR /app
 
-# Copy requirements first for better caching
+# Install backend dependencies
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire backend directory
-COPY backend/ .
+# Copy backend source and built frontend assets
+COPY backend/ ./
+COPY --from=frontend-build /app/dist ./dist
 
-# Expose port
 EXPOSE 8000
-
-# Run the application
 CMD ["python", "main.py"]
