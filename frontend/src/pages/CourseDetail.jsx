@@ -17,12 +17,14 @@ const CourseDetail = () => {
   const fetchCourseDetail = async () => {
     try {
       setLoading(true);
+      console.log('Fetching course detail for ID:', courseId);
       const response = await axios.get(`/api/trainings/${courseId}`);
+      console.log('Response received:', response.data);
       setCourse(response.data);
       setError('');
     } catch (err) {
+      console.error('Error fetching course detail:', err);
       setError('Failed to load course details.');
-      console.error(err);
     } finally {
       setLoading(false);
     }
