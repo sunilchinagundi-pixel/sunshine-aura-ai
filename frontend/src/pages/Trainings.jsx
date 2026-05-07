@@ -49,7 +49,7 @@ export default function Trainings() {
   if (loading) {
     return (
       <div className="container" style={{ textAlign: 'center', padding: '4rem' }}>
-        <p>Loading training programs...</p>
+        <p>Loading training programs... (Updated)</p>
       </div>
     );
   }
