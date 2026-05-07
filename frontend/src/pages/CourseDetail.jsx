@@ -11,6 +11,32 @@ const CourseDetail = () => {
   const [enrollmentMessage, setEnrollmentMessage] = useState('');
 
   useEffect(() => {
+    // Show fallback data immediately for testing
+    const fallbackCourse = {
+      id: 2,
+      title: "AI + Python Web Applications",
+      description: "Build modern AI-powered web apps using FastAPI, integrate LLMs, RAG, and deploy to cloud. Weekend program!",
+      category: "AI",
+      is_free: true,
+      duration: "6 weeks",
+      tools: ["Python", "FastAPI", "TensorFlow", "OpenAI API", "Docker", "AWS"],
+      internship: true,
+      certification: true,
+      modules: [
+        { number: 1, title: "Python & Backend Fundamentals", topics: ["Variables, Loops, Functions", "OOP Concepts", "Exception Handling"] },
+        { number: 2, title: "Web Development with FastAPI", topics: ["Building APIs with FastAPI", "Request & Response Handling"] }
+      ],
+      projects: [
+        { name: "AI Chatbot Web App", description: "Build a web application with AI chatbot functionality" },
+        { name: "ML Model Deployment", description: "Deploy machine learning models to production" }
+      ],
+      job_roles: ["AI Developer", "Backend Engineer", "Full-Stack Developer"],
+      salary_range: "₹8-25 LPA"
+    };
+    setCourse(fallbackCourse);
+    setLoading(false);
+
+    // Try API call in background
     fetchCourseDetail();
   }, [courseId]);
 
