@@ -3,10 +3,37 @@ import axios from 'axios';
 
 export default function Trainings() {
   const [trainings, setTrainings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    axios.get('/api/trainings').then(r => setTrainings(r.data));
+    axios.get('/api/trainings')
+      .then(r => {
+        setTrainings(r.data);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError('Failed to load trainings');
+        setLoading(false);
+        console.error(err);
+      });
   }, []);
+
+  if (loading) {
+    return (
+      <div className="container" style={{ textAlign: 'center', padding: '4rem' }}>
+        <p>Loading training programs...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container" style={{ textAlign: 'center', padding: '4rem' }}>
+        <p style={{ color: 'red' }}>{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container">
@@ -29,51 +56,57 @@ export default function Trainings() {
       </div>
 
       <div className="grid">
-        {trainings.map(t => (
-          <div key={t.id} className="card" style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '1rem' }}>
-              <h3 style={{ margin: 0 }}>{t.title}</h3>
-              <span style={{ background: t.is_free ? '#4caf50' : '#ff9800', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '4px', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
-                {t.is_free ? 'FREE' : 'PRO'}
-              </span>
-            </div>
-            
-            <p style={{ marginBottom: '1rem', color: '#555' }}>{t.description}</p>
-            
-            <div style={{ marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #eee' }}>
-              {t.duration && <p style={{ fontSize: '0.9rem', margin: '0.25rem 0', color: '#2563eb' }}><strong>⏱️ Duration:</strong> {t.duration}</p>}
-              <p style={{ fontSize: '0.9rem', margin: '0.25rem 0', color: '#666' }}><strong>📂 Category:</strong> {t.category}</p>
-            </div>
-
-            {t.tools && t.tools.length > 0 && (
-              <div style={{ marginBottom: '1rem' }}>
-                <p style={{ fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>🛠️ Tools & Technologies:</p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  {t.tools.map((tool, idx) => (
-                    <span key={idx} style={{ background: '#e0e7ff', color: '#2563eb', padding: '0.25rem 0.75rem', borderRadius: '12px', fontSize: '0.8rem' }}>
-                      {tool}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div style={{ marginBottom: '1rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              {t.internship && (
-                <span style={{ background: '#d1fae5', color: '#047857', padding: '0.4rem 0.8rem', borderRadius: '6px', fontSize: '0.85rem', fontWeight: '600' }}>
-                  🎯 Internship Included
-                </span>
-              )}
-              {t.certification && (
-                <span style={{ background: '#fef3c7', color: '#92400e', padding: '0.4rem 0.8rem', borderRadius: '6px', fontSize: '0.85rem', fontWeight: '600' }}>
-                  🏆 Industry Certification
-                </span>
-              )}
-            </div>
-
-            <button className="button" onClick={() => window.location.href = '/register'} style={{ marginTop: 'auto' }}>Enroll Now</button>
+        {trainings.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '2rem', gridColumn: '1 / -1' }}>
+            <p>No training programs available at the moment.</p>
           </div>
-        ))}
+        ) : (
+          trainings.map(t => (
+            <div key={t.id} className="card" style={{ display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '1rem' }}>
+                <h3 style={{ margin: 0 }}>{t.title}</h3>
+                <span style={{ background: t.is_free ? '#4caf50' : '#ff9800', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '4px', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
+                  {t.is_free ? 'FREE' : 'PRO'}
+                </span>
+              </div>
+              
+              <p style={{ marginBottom: '1rem', color: '#555' }}>{t.description}</p>
+              
+              <div style={{ marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid #eee' }}>
+                {t.duration && <p style={{ fontSize: '0.9rem', margin: '0.25rem 0', color: '#2563eb' }}><strong>⏱️ Duration:</strong> {t.duration}</p>}
+                <p style={{ fontSize: '0.9rem', margin: '0.25rem 0', color: '#666' }}><strong>📂 Category:</strong> {t.category}</p>
+              </div>
+
+              {t.tools && t.tools.length > 0 && (
+                <div style={{ marginBottom: '1rem' }}>
+                  <p style={{ fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>🛠️ Tools & Technologies:</p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    {t.tools.map((tool, idx) => (
+                      <span key={idx} style={{ background: '#e0e7ff', color: '#2563eb', padding: '0.25rem 0.75rem', borderRadius: '12px', fontSize: '0.8rem' }}>
+                        {tool}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div style={{ marginBottom: '1rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                {t.internship && (
+                  <span style={{ background: '#d1fae5', color: '#047857', padding: '0.4rem 0.8rem', borderRadius: '6px', fontSize: '0.85rem', fontWeight: '600' }}>
+                    🎯 Internship Included
+                  </span>
+                )}
+                {t.certification && (
+                  <span style={{ background: '#fef3c7', color: '#92400e', padding: '0.4rem 0.8rem', borderRadius: '6px', fontSize: '0.85rem', fontWeight: '600' }}>
+                    🏆 Industry Certification
+                  </span>
+                )}
+              </div>
+
+              <button className="button" onClick={() => window.location.href = '/register'} style={{ marginTop: 'auto' }}>Enroll Now</button>
+            </div>
+          ))
+        )}
       </div>
 
       <div style={{ background: 'rgba(255, 255, 255, 0.9)', padding: '2rem', borderRadius: '12px', marginTop: '2rem', border: '1px solid rgba(0, 0, 0, 0.1)', textAlign: 'center' }}>
