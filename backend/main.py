@@ -304,14 +304,14 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
         "user": UserResponse.from_orm(user)
     }
 
-@app.get("/api/trainings", response_model=List[Training])
+@app.get("/api/trainings")
 def get_trainings(q: Optional[str] = None):
     if q:
         query_lower = q.strip().lower()
         return [t for t in trainings if query_lower in t.title.lower() or query_lower in t.description.lower() or query_lower in t.category.lower()]
     return trainings
 
-@app.get("/api/trainings/{course_id}", response_model=Training)
+@app.get("/api/trainings/{course_id}")
 def get_course_detail(course_id: int):
     for course in trainings:
         if course.id == course_id:
