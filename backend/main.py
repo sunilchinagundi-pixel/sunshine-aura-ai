@@ -249,7 +249,7 @@ offers = [
 ]
 
 # Admin token for protected routes
-ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN", "sunshine-admin-secret-2026")
+ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN", "2026SUNILROOT")
 
 def verify_admin(authorization: Optional[str] = Header(None)):
     if not authorization or authorization != f"Bearer {ADMIN_TOKEN}":
