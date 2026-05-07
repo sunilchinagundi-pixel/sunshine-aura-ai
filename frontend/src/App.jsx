@@ -6,6 +6,7 @@ import Consulting from './pages/Consulting';
 import Pricing from './pages/Pricing';
 import Register from './pages/Register';
 import Login from './pages/Login';
+import Admin from './pages/Admin';
 import Logo from './components/Logo';
 
 export default function App() {
@@ -37,6 +38,7 @@ export default function App() {
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </main>
 
