@@ -11,7 +11,7 @@ from io import BytesIO
 from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Font
 from sqlalchemy.orm import Session
-from database import engine, SessionLocal, Base, User, get_db
+from database import engine, SessionLocal, Base, User, CallbackRequest, get_db
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -60,6 +60,14 @@ class UserResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class CallbackRequestCreate(BaseModel):
+    name: str
+    email: EmailStr
+    mobile: str
+    course: str
+    location: Optional[str] = None
+    message: Optional[str] = None
 
 class Training(BaseModel):
     id: int
@@ -153,8 +161,29 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
     }
 
 @app.get("/api/trainings", response_model=List[Training])
-def get_trainings():
+def get_trainings(q: Optional[str] = None):
+    if q:
+        query_lower = q.strip().lower()
+        return [t for t in trainings if query_lower in t.title.lower() or query_lower in t.description.lower() or query_lower in t.category.lower()]
     return trainings
+
+@app.post("/api/callback-request")
+def create_callback_request(request: CallbackRequestCreate, db: Session = Depends(get_db)):
+    callback = CallbackRequest(
+        name=request.name,
+        email=request.email,
+        mobile=request.mobile,
+        course=request.course,
+        location=request.location,
+        message=request.message,
+    )
+    db.add(callback)
+    db.commit()
+    db.refresh(callback)
+    return {
+        "message": "Callback request received. Our team will contact you soon.",
+        "request_id": callback.id
+    }
 
 @app.get("/api/jobs", response_model=List[JobPost])
 def get_jobs():

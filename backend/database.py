@@ -35,6 +35,19 @@ class User(Base):
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
 
 
+class CallbackRequest(Base):
+    __tablename__ = "callback_requests"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+    email = Column(String(255), nullable=False, index=True)
+    mobile = Column(String(20), nullable=False)
+    course = Column(String(255), nullable=False)
+    location = Column(String(255), nullable=True)
+    message = Column(String(1000), nullable=True)
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+
+
 # Create tables
 Base.metadata.create_all(bind=engine)
 
