@@ -7,39 +7,42 @@ export default function Trainings() {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    // Show fallback data immediately for testing
+    setTrainings([
+      {
+        id: 1,
+        title: "Python Fundamentals",
+        description: "Master Python basics for business applications.",
+        category: "Python",
+        is_free: true,
+        duration: "4 weeks",
+        tools: ["Python 3.11", "Jupyter"],
+        internship: false,
+        certification: true
+      },
+      {
+        id: 2,
+        title: "AI + Python Web Applications",
+        description: "Build AI-powered web apps.",
+        category: "AI",
+        is_free: true,
+        duration: "6 weeks",
+        tools: ["Python", "FastAPI"],
+        internship: true,
+        certification: true
+      }
+    ]);
+    setLoading(false);
+
+    // Try API call in background
     axios.get('/api/trainings')
       .then(r => {
-        setTrainings(r.data);
-        setLoading(false);
+        if (r.data && r.data.length > 0) {
+          setTrainings(r.data);
+        }
       })
       .catch(err => {
         console.error('API Error:', err);
-        // Temporary fallback data
-        setTrainings([
-          {
-            id: 1,
-            title: "Python Fundamentals",
-            description: "Master Python basics for business applications.",
-            category: "Python",
-            is_free: true,
-            duration: "4 weeks",
-            tools: ["Python 3.11", "Jupyter"],
-            internship: false,
-            certification: true
-          },
-          {
-            id: 2,
-            title: "AI + Python Web Applications",
-            description: "Build AI-powered web apps.",
-            category: "AI",
-            is_free: true,
-            duration: "6 weeks",
-            tools: ["Python", "FastAPI"],
-            internship: true,
-            certification: true
-          }
-        ]);
-        setLoading(false);
       });
   }, []);
 
