@@ -311,7 +311,7 @@ def get_trainings(q: Optional[str] = None):
         return [t for t in trainings if query_lower in t.title.lower() or query_lower in t.description.lower() or query_lower in t.category.lower()]
     return trainings
 
-@app.get("/api/trainings/{course_id}")
+@app.get("/api/trainings/{course_id}", response_model=Training)
 def get_course_detail(course_id: int):
     for course in trainings:
         if course.id == course_id:
