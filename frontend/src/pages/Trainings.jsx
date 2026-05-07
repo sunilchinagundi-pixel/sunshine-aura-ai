@@ -13,9 +13,33 @@ export default function Trainings() {
         setLoading(false);
       })
       .catch(err => {
-        setError('Failed to load trainings');
+        console.error('API Error:', err);
+        // Temporary fallback data
+        setTrainings([
+          {
+            id: 1,
+            title: "Python Fundamentals",
+            description: "Master Python basics for business applications.",
+            category: "Python",
+            is_free: true,
+            duration: "4 weeks",
+            tools: ["Python 3.11", "Jupyter"],
+            internship: false,
+            certification: true
+          },
+          {
+            id: 2,
+            title: "AI + Python Web Applications",
+            description: "Build AI-powered web apps.",
+            category: "AI",
+            is_free: true,
+            duration: "6 weeks",
+            tools: ["Python", "FastAPI"],
+            internship: true,
+            certification: true
+          }
+        ]);
         setLoading(false);
-        console.error(err);
       });
   }, []);
 
