@@ -266,6 +266,83 @@ def export_users_excel(authorization: Optional[str] = Header(None), db: Session 
         headers={"Content-Disposition": "attachment; filename=sunshine_aura_users.xlsx"}
     )
 
+@app.get("/api/admin/callback-requests")
+def get_callback_requests(authorization: Optional[str] = Header(None), db: Session = Depends(get_db)):
+    if not authorization or authorization != f"Bearer {ADMIN_TOKEN}":
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    callbacks = db.query(CallbackRequest).order_by(CallbackRequest.created_at.desc()).all()
+    return [
+        {
+            "id": c.id,
+            "name": c.name,
+            "email": c.email,
+            "mobile": c.mobile,
+            "course": c.course,
+            "location": c.location,
+            "message": c.message,
+            "created_at": c.created_at
+        }
+        for c in callbacks
+    ]
+
+@app.get("/api/admin/export-callback-requests")
+def export_callback_requests_excel(authorization: Optional[str] = Header(None), db: Session = Depends(get_db)):
+    if not authorization or authorization != f"Bearer {ADMIN_TOKEN}":
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    callbacks = db.query(CallbackRequest).all()
+    
+    # Create Excel workbook
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Callback Requests"
+    
+    # Header row
+    headers = ["ID", "Name", "Email", "Mobile", "Course", "Location", "Message", "Requested Date"]
+    ws.append(headers)
+    
+    # Style header row
+    header_fill = PatternFill(start_color="10b981", end_color="10b981", fill_type="solid")
+    header_font = Font(bold=True, color="FFFFFF")
+    for cell in ws[1]:
+        cell.fill = header_fill
+        cell.font = header_font
+    
+    # Add data rows
+    for callback in callbacks:
+        ws.append([
+            callback.id,
+            callback.name,
+            callback.email,
+            callback.mobile,
+            callback.course,
+            callback.location or "",
+            callback.message or "",
+            callback.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        ])
+    
+    # Adjust column widths
+    ws.column_dimensions["A"].width = 8
+    ws.column_dimensions["B"].width = 20
+    ws.column_dimensions["C"].width = 25
+    ws.column_dimensions["D"].width = 15
+    ws.column_dimensions["E"].width = 25
+    ws.column_dimensions["F"].width = 15
+    ws.column_dimensions["G"].width = 30
+    ws.column_dimensions["H"].width = 20
+    
+    # Save to BytesIO
+    buffer = BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+    
+    return StreamingResponse(
+        iter([buffer.getvalue()]),
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=sunshine_aura_callback_requests.xlsx"}
+    )
+
 # Serve React app
 @app.get("/{full_path:path}")
 async def serve_react_app(full_path: str):
