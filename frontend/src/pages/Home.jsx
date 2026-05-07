@@ -103,18 +103,6 @@ export default function Home() {
             {callbackError && <p className="error-message">{callbackError}</p>}
           </form>
 
-          <div className="whatsapp-card">
-            <h3>Chat with Us on WhatsApp</h3>
-            <p>Quick support for course guidance, pricing, and enrollment.</p>
-            <a
-              className="button whatsapp-button"
-              href="https://wa.me/918197387601?text=Hi%2C%20I%20need%20help%20with%20AI%20training%20and%20course%20details."
-              target="_blank"
-              rel="noreferrer"
-            >
-              Chat on WhatsApp
-            </a>
-          </div>
         </div>
       </div>
 
