@@ -69,6 +69,15 @@ class CallbackRequestCreate(BaseModel):
     location: Optional[str] = None
     message: Optional[str] = None
 
+class Module(BaseModel):
+    number: int
+    title: str
+    topics: List[str]
+
+class Project(BaseModel):
+    name: str
+    description: str
+
 class Training(BaseModel):
     id: int
     title: str
@@ -79,6 +88,11 @@ class Training(BaseModel):
     internship: Optional[bool] = False
     certification: Optional[bool] = False
     duration: Optional[str] = None
+    modules: Optional[List[Module]] = None
+    projects: Optional[List[Project]] = None
+    job_roles: Optional[List[str]] = None
+    salary_range: Optional[str] = None
+    schedule: Optional[str] = None
 
 class JobPost(BaseModel):
     id: int
@@ -104,18 +118,51 @@ trainings = [
         tools=["Python 3.11", "Jupyter Notebook", "VS Code", "Git"],
         internship=False,
         certification=True,
-        duration="4 weeks"
+        duration="4 weeks",
+        schedule="Weekdays (6-8 PM)",
+        salary_range="₹5-15 LPA",
+        job_roles=["Python Developer", "Automation Engineer", "Data Engineer (Entry)"],
+        modules=[
+            Module(number=1, title="Python Basics & Setup", topics=["Variables, Data Types", "Loops, Functions", "OOP Concepts"]),
+            Module(number=2, title="Exception Handling & File Operations", topics=["Try-Except Blocks", "File I/O", "Working with Databases (SQL)"]),
+            Module(number=3, title="Libraries & Frameworks Intro", topics=["Pandas Basics", "NumPy Arrays", "REST API Basics"]),
+        ],
+        projects=[
+            Project(name="Automation Script", description="Create a script to automate daily tasks"),
+            Project(name="Data Processing Tool", description="Build a tool to process and analyze CSV files"),
+        ]
     ),
     Training(
         id=2,
         title="AI + Python Web Applications",
-        description="Build modern AI-powered web apps using Flask, Django, TensorFlow, and latest ML libraries.",
+        description="Build modern AI-powered web apps using FastAPI, integrate LLMs, RAG, and deploy to cloud. Weekend program!",
         category="AI",
         is_free=True,
-        tools=["Python", "Flask", "TensorFlow", "Pandas", "Scikit-learn", "Docker"],
+        tools=["Python", "FastAPI", "TensorFlow", "OpenAI API", "Docker", "AWS"],
         internship=True,
         certification=True,
-        duration="6 weeks"
+        duration="6 weeks",
+        schedule="Friday • Saturday • Sunday (10 AM - 5 PM)",
+        salary_range="₹8-25 LPA",
+        job_roles=["AI Developer", "Backend Engineer", "Full-Stack Developer", "ML Engineer"],
+        modules=[
+            Module(number=1, title="Python & Backend Fundamentals", topics=["Variables, Loops, Functions", "OOP Concepts", "Exception Handling", "REST API Basics", "Working with Databases (SQL)"]),
+            Module(number=2, title="Web Development with FastAPI", topics=["Building APIs with FastAPI", "Request & Response Handling", "Data Validation (Pydantic)", "API Testing with Swagger", "Mini Backend Project"]),
+            Module(number=3, title="AI Fundamentals", topics=["Introduction to AI & NLP", "Text Processing Basics", "Transformers Overview", "Using Pre-trained Models (HuggingFace)"]),
+            Module(number=4, title="LLM & AI Integration", topics=["Prompt Engineering Basics", "Working with LLMs", "OpenAI & Open Source Models", "Building AI-powered Features", "Chatbot Development"]),
+            Module(number=5, title="RAG (Retrieval-Augmented Generation)", topics=["Concept of RAG", "Document Processing", "Vector Databases (FAISS, ChromaDB)", "Build AI Document Q&A System"]),
+            Module(number=6, title="Cloud & Deployment", topics=["AWS Basics (EC2, S3)", "Deploy FastAPI Applications", "Docker Basics", "Hosting AI Applications"]),
+            Module(number=7, title="DevOps Basics", topics=["Git & GitHub", "CI/CD Basics", "Automated Deployment", "Monitoring & Logs"]),
+            Module(number=8, title="Projects (Hands-On)", topics=["AI Chatbot", "AI Document Assistant", "AI Interview System", "Resume Analyzer", "Sentiment Analysis API"]),
+            Module(number=9, title="Teach & Earn (Guidance)", topics=["How to Create Content", "Build Online Presence", "Freelancing Basics", "Mentorship Tips"]),
+        ],
+        projects=[
+            Project(name="AI Chatbot", description="Build an intelligent chatbot using OpenAI API"),
+            Project(name="AI Document Assistant", description="Create a system to process and query documents with AI"),
+            Project(name="AI Interview System", description="Build an AI-powered interview preparation tool"),
+            Project(name="Resume Analyzer", description="Analyze and score resumes using NLP"),
+            Project(name="Sentiment Analysis API", description="Deploy a sentiment analysis API to production"),
+        ]
     ),
     Training(
         id=3,
@@ -126,7 +173,14 @@ trainings = [
         tools=["PyTorch", "TensorFlow", "Hugging Face", "AWS SageMaker", "Kubernetes", "MLflow"],
         internship=True,
         certification=True,
-        duration="8 weeks"
+        duration="8 weeks",
+        salary_range="₹15-40 LPA",
+        job_roles=["Senior AI Engineer", "ML Architect", "Research Engineer"],
+        modules=[
+            Module(number=1, title="Advanced Deep Learning", topics=["Neural Network Architectures", "CNNs & RNNs", "Attention Mechanisms", "Transformers"]),
+            Module(number=2, title="LLM Fine-Tuning", topics=["Model Selection & Setup", "Fine-tuning Techniques", "LoRA & QLoRA", "Optimization Strategies"]),
+            Module(number=3, title="MLOps & Production", topics=["Model Versioning", "Pipeline Orchestration", "Model Monitoring", "A/B Testing"]),
+        ]
     ),
     Training(
         id=4,
@@ -137,7 +191,14 @@ trainings = [
         tools=["Scikit-learn", "Pandas", "NumPy", "Matplotlib", "Jupyter"],
         internship=False,
         certification=True,
-        duration="5 weeks"
+        duration="5 weeks",
+        salary_range="₹6-20 LPA",
+        job_roles=["ML Engineer", "Data Scientist", "Analytics Engineer"],
+        modules=[
+            Module(number=1, title="ML Fundamentals", topics=["Supervised Learning", "Unsupervised Learning", "Model Evaluation", "Cross-Validation"]),
+            Module(number=2, title="Algorithms & Techniques", topics=["Linear & Logistic Regression", "Decision Trees", "K-Means Clustering", "Dimensionality Reduction"]),
+            Module(number=3, title="Real-World Projects", topics=["Feature Engineering", "Data Preprocessing", "Building ML Pipelines"]),
+        ]
     ),
     Training(
         id=5,
@@ -148,18 +209,34 @@ trainings = [
         tools=["Python", "React", "FastAPI", "TensorFlow", "AWS", "Docker", "Git"],
         internship=True,
         certification=True,
-        duration="12 weeks"
+        duration="12 weeks",
+        salary_range="₹12-35 LPA",
+        job_roles=["Full-Stack AI Developer", "AI Engineer", "Tech Lead"],
+        modules=[
+            Module(number=1, title="Python Mastery", topics=["Core Python Concepts", "OOP & Design Patterns", "Testing & Debugging"]),
+            Module(number=2, title="Frontend (React)", topics=["React Basics", "State Management", "API Integration"]),
+            Module(number=3, title="Backend (FastAPI)", topics=["API Development", "Database Design", "Authentication"]),
+            Module(number=4, title="AI/ML Integration", topics=["ML Model Development", "Integration with Backend", "Real-time Predictions"]),
+            Module(number=5, title="Cloud Deployment", topics=["AWS Services", "Containerization", "Scaling Applications"]),
+        ]
     ),
     Training(
         id=6,
         title="Generative AI & LLM Engineering",
-        description="ChatGPT, LLama, BERT integration. Fine-tuning models, prompt engineering, RAG systems.",
+        description="ChatGPT, Llama, BERT integration. Fine-tuning models, prompt engineering, RAG systems.",
         category="AI",
         is_free=False,
         tools=["Hugging Face", "OpenAI API", "LangChain", "Llama", "Prompt Engineering"],
         internship=True,
         certification=True,
-        duration="6 weeks"
+        duration="6 weeks",
+        salary_range="₹15-40 LPA",
+        job_roles=["GenAI Engineer", "Prompt Engineer", "LLM Specialist"],
+        modules=[
+            Module(number=1, title="Generative AI Fundamentals", topics=["GANs & Diffusion Models", "Transformer Basics", "Attention Mechanisms"]),
+            Module(number=2, title="LLM & Prompt Engineering", topics=["Working with OpenAI", "Prompt Optimization", "Fine-tuning LLMs"]),
+            Module(number=3, title="RAG & Advanced Techniques", topics=["Retrieval-Augmented Generation", "Vector Stores", "Building Intelligent Systems"]),
+        ]
     ),
 ]
 jobs = [
@@ -233,6 +310,13 @@ def get_trainings(q: Optional[str] = None):
         query_lower = q.strip().lower()
         return [t for t in trainings if query_lower in t.title.lower() or query_lower in t.description.lower() or query_lower in t.category.lower()]
     return trainings
+
+@app.get("/api/trainings/{course_id}", response_model=Training)
+def get_course_detail(course_id: int):
+    for course in trainings:
+        if course.id == course_id:
+            return course
+    raise HTTPException(status_code=404, detail="Course not found")
 
 @app.post("/api/callback-request")
 def create_callback_request(request: CallbackRequestCreate, db: Session = Depends(get_db)):
