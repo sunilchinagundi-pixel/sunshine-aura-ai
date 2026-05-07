@@ -13,17 +13,18 @@ export default function App() {
     <>
       <header>
         <nav>
-          <Link to="/" style={{ textDecoration: 'none' }}>
+          <Link to="/" className="logo-link" style={{ textDecoration: 'none' }}>
             <Logo />
           </Link>
-          <div style={{ flex: 1 }}></div>
-          <Link to="/">Home</Link>
-          <Link to="/trainings">Trainings</Link>
-          <Link to="/jobs">Jobs</Link>
-          <Link to="/consulting">Consulting</Link>
-          <Link to="/pricing">Pricing</Link>
-          <Link to="/register" className="button" style={{ margin: 0 }}>Register</Link>
-          <Link to="/login" className="button button-secondary" style={{ margin: 0 }}>Login</Link>
+          <div className="nav-group">
+            <Link to="/">Home</Link>
+            <Link to="/trainings">Trainings</Link>
+            <Link to="/jobs">Jobs</Link>
+            <Link to="/consulting">Consulting</Link>
+            <Link to="/pricing">Pricing</Link>
+            <Link to="/register" className="button" style={{ margin: 0 }}>Register</Link>
+            <Link to="/login" className="button button-secondary" style={{ margin: 0 }}>Login</Link>
+          </div>
         </nav>
       </header>
 

@@ -30,8 +30,10 @@ header {
 
 header nav {
   display: flex;
-  gap: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
   align-items: center;
+  justify-content: space-between;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -43,6 +45,17 @@ header a {
   transition: all 0.3s ease;
   padding: 0.5rem 1rem;
   border-radius: 8px;
+}
+
+header a.logo-link {
+  flex: 0 1 auto;
+}
+
+header nav .nav-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
 }
 
 header a:hover {
@@ -193,3 +206,81 @@ footer {
   margin-top: 4rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
+
+@media (max-width: 900px) {
+  header {
+    padding: 1rem;
+  }
+
+  header nav {
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .logo-link {
+    flex: 0 1 100%;
+  }
+
+  .nav-group {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .container {
+    padding: 1.25rem;
+  }
+
+  .hero {
+    padding: 2.5rem 1.5rem;
+  }
+
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .card {
+    padding: 2rem;
+  }
+
+  .button,
+  .button-secondary {
+    width: 100%;
+    text-align: center;
+  }
+
+  form {
+    padding: 2rem 1.5rem;
+    margin: 1.5rem auto;
+  }
+
+  footer {
+    padding: 2rem 1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  header a,
+  .button,
+  .button-secondary {
+    padding: 0.65rem 0.9rem;
+    font-size: 0.95rem;
+  }
+
+  .hero {
+    padding: 2rem 1rem;
+  }
+
+  .hero p {
+    font-size: 1.1rem;
+  }
+
+  .card {
+    padding: 1.75rem;
+  }
+}
+
