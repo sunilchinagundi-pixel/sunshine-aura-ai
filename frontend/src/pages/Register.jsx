@@ -2,7 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 
 export default function Register() {
-  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'free' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', mobile: '', role: 'free' });
   const [msg, setMsg] = useState('');
 
   const handleSubmit = async (e) => {
@@ -10,7 +10,7 @@ export default function Register() {
     try {
       const res = await axios.post('/api/register', form);
       setMsg('✅ Registration successful! You can now login.');
-      setForm({ name: '', email: '', password: '', role: 'free' });
+      setForm({ name: '', email: '', password: '', mobile: '', role: 'free' });
     } catch (err) {
       setMsg('❌ ' + (err.response?.data?.detail || 'Registration failed'));
     }
@@ -23,6 +23,7 @@ export default function Register() {
         {msg && <p style={{ marginBottom: '1rem', padding: '0.75rem', background: msg.includes('✅') ? '#d4edda' : '#f8d7da', borderRadius: '4px' }}>{msg}</p>}
         <input placeholder="Full Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
         <input type="email" placeholder="Email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required />
+        <input type="tel" placeholder="Mobile Number" value={form.mobile} onChange={e => setForm({ ...form, mobile: e.target.value })} required />
         <input type="password" placeholder="Password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required />
         <select value={form.role} onChange={e => setForm({ ...form, role: e.target.value })} style={{ width: '100%', padding: '0.75rem', marginBottom: '1rem', borderRadius: '4px', border: '1px solid #ddd' }}>
           <option value="free">Free User</option>

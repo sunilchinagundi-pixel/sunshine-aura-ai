@@ -1,11 +1,20 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
-from pydantic import BaseModel
+from fastapi.responses import FileResponse, StreamingResponse
+from pydantic import BaseModel, EmailStr
 from enum import Enum
-from typing import List
+from typing import List, Optional
 import os
+from datetime import datetime
+from io import BytesIO
+from openpyxl import Workbook
+from openpyxl.styles import PatternFill, Font
+from sqlalchemy.orm import Session
+from database import engine, SessionLocal, Base, User, get_db
+
+# Create tables
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Sunshine Aura AI Backend",
@@ -34,6 +43,7 @@ class UserCreate(BaseModel):
     name: str
     email: str
     password: str
+    mobile: str
     role: Role = Role.free
 
 class UserLogin(BaseModel):
@@ -44,7 +54,12 @@ class UserResponse(BaseModel):
     id: int
     name: str
     email: str
-    role: Role
+    mobile: str
+    role: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
 
 class Training(BaseModel):
     id: int
@@ -66,8 +81,7 @@ class ConsultingOffer(BaseModel):
     title: str
     details: str
 
-# In-memory storage (use database in production)
-users = []
+# Static data
 trainings = [
     Training(id=1, title="Python Fundamentals", description="Learn Python basics for business applications.", category="Python", is_free=True),
     Training(id=2, title="AI + Python Web Applications", description="Build modern AI-powered web applications using Python and practical tools.", category="AI", is_free=True),
@@ -82,6 +96,14 @@ offers = [
     ConsultingOffer(id=2, title="Career Guidance", details="Personalized career coaching in AI and tech."),
 ]
 
+# Admin token for protected routes
+ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN", "sunshine-admin-secret-2026")
+
+def verify_admin(authorization: Optional[str] = Header(None)):
+    if not authorization or authorization != f"Bearer {ADMIN_TOKEN}":
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    return True
+
 # Routes
 @app.get("/")
 def root():
@@ -92,30 +114,42 @@ def root():
     return {"message": "Welcome to Sunshine Aura AI", "version": "0.1.0"}
 
 @app.post("/api/register")
-def register(user: UserCreate):
-    if any(u["email"] == user.email for u in users):
+def register(user: UserCreate, db: Session = Depends(get_db)):
+    # Check if email already exists
+    existing_user = db.query(User).filter(User.email == user.email).first()
+    if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered.")
-    new_user = {
-        "id": len(users) + 1,
-        "name": user.name,
-        "email": user.email,
-        "password": user.password,
-        "role": user.role
-    }
-    users.append(new_user)
+    
+    # Create new user
+    new_user = User(
+        name=user.name,
+        email=user.email,
+        password=user.password,
+        mobile=user.mobile,
+        role=user.role.value
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    
     return {
         "message": "Registration successful",
-        "user": UserResponse(id=new_user["id"], name=new_user["name"], email=new_user["email"], role=new_user["role"])
+        "user": UserResponse.from_orm(new_user)
     }
 
 @app.post("/api/login")
-def login(credentials: UserLogin):
-    user = next((u for u in users if u["email"] == credentials.email and u["password"] == credentials.password), None)
+def login(credentials: UserLogin, db: Session = Depends(get_db)):
+    user = db.query(User).filter(
+        User.email == credentials.email,
+        User.password == credentials.password
+    ).first()
+    
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials.")
+    
     return {
         "message": "Login successful",
-        "user": UserResponse(id=user["id"], name=user["name"], email=user["email"], role=user["role"])
+        "user": UserResponse.from_orm(user)
     }
 
 @app.get("/api/trainings", response_model=List[Training])
@@ -144,8 +178,64 @@ def get_pricing():
     }
 
 @app.get("/api/users", response_model=List[UserResponse])
-def get_all_users():
-    return [UserResponse(id=u["id"], name=u["name"], email=u["email"], role=u["role"]) for u in users]
+def get_all_users(db: Session = Depends(get_db)):
+    users_list = db.query(User).all()
+    return [UserResponse.from_orm(u) for u in users_list]
+
+@app.get("/api/admin/export-users")
+def export_users_excel(authorization: Optional[str] = Header(None), db: Session = Depends(get_db)):
+    # Verify admin token
+    if not authorization or authorization != f"Bearer {ADMIN_TOKEN}":
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    # Fetch all users
+    users_list = db.query(User).all()
+    
+    # Create Excel workbook
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Registered Users"
+    
+    # Header row
+    headers = ["ID", "Name", "Email", "Mobile", "Role", "Registered Date"]
+    ws.append(headers)
+    
+    # Style header row
+    header_fill = PatternFill(start_color="667eea", end_color="667eea", fill_type="solid")
+    header_font = Font(bold=True, color="FFFFFF")
+    for cell in ws[1]:
+        cell.fill = header_fill
+        cell.font = header_font
+    
+    # Add data rows
+    for user in users_list:
+        ws.append([
+            user.id,
+            user.name,
+            user.email,
+            user.mobile,
+            user.role,
+            user.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        ])
+    
+    # Adjust column widths
+    ws.column_dimensions["A"].width = 8
+    ws.column_dimensions["B"].width = 20
+    ws.column_dimensions["C"].width = 25
+    ws.column_dimensions["D"].width = 15
+    ws.column_dimensions["E"].width = 12
+    ws.column_dimensions["F"].width = 20
+    
+    # Save to BytesIO
+    buffer = BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+    
+    return StreamingResponse(
+        iter([buffer.getvalue()]),
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=sunshine_aura_users.xlsx"}
+    )
 
 # Serve React app
 @app.get("/{full_path:path}")
