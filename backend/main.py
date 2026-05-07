@@ -75,6 +75,10 @@ class Training(BaseModel):
     description: str
     category: str
     is_free: bool
+    tools: Optional[List[str]] = None
+    internship: Optional[bool] = False
+    certification: Optional[bool] = False
+    duration: Optional[str] = None
 
 class JobPost(BaseModel):
     id: int
@@ -91,9 +95,72 @@ class ConsultingOffer(BaseModel):
 
 # Static data
 trainings = [
-    Training(id=1, title="Python Fundamentals", description="Learn Python basics for business applications.", category="Python", is_free=True),
-    Training(id=2, title="AI + Python Web Applications", description="Build modern AI-powered web applications using Python and practical tools.", category="AI", is_free=True),
-    Training(id=3, title="Advanced AI Architecture (Pro)", description="Build production AI systems — for pro users only.", category="AI", is_free=False),
+    Training(
+        id=1,
+        title="Python Fundamentals",
+        description="Master Python basics for business applications, scripting, and automation.",
+        category="Python",
+        is_free=True,
+        tools=["Python 3.11", "Jupyter Notebook", "VS Code", "Git"],
+        internship=False,
+        certification=True,
+        duration="4 weeks"
+    ),
+    Training(
+        id=2,
+        title="AI + Python Web Applications",
+        description="Build modern AI-powered web apps using Flask, Django, TensorFlow, and latest ML libraries.",
+        category="AI",
+        is_free=True,
+        tools=["Python", "Flask", "TensorFlow", "Pandas", "Scikit-learn", "Docker"],
+        internship=True,
+        certification=True,
+        duration="6 weeks"
+    ),
+    Training(
+        id=3,
+        title="Advanced AI Architecture (Pro)",
+        description="Production-grade AI systems: LLMs, Neural Networks, MLOps, Cloud Deployment.",
+        category="AI",
+        is_free=False,
+        tools=["PyTorch", "TensorFlow", "Hugging Face", "AWS SageMaker", "Kubernetes", "MLflow"],
+        internship=True,
+        certification=True,
+        duration="8 weeks"
+    ),
+    Training(
+        id=4,
+        title="AI + Machine Learning Fundamentals",
+        description="Learn supervised & unsupervised learning, classification, regression, and real-world ML projects.",
+        category="AI",
+        is_free=True,
+        tools=["Scikit-learn", "Pandas", "NumPy", "Matplotlib", "Jupyter"],
+        internship=False,
+        certification=True,
+        duration="5 weeks"
+    ),
+    Training(
+        id=5,
+        title="Full-Stack AI Development (Internship + Certification)",
+        description="Complete pathway: Python → Web Dev → AI/ML → Deploy to Cloud. Build real projects with mentorship.",
+        category="AI",
+        is_free=False,
+        tools=["Python", "React", "FastAPI", "TensorFlow", "AWS", "Docker", "Git"],
+        internship=True,
+        certification=True,
+        duration="12 weeks"
+    ),
+    Training(
+        id=6,
+        title="Generative AI & LLM Engineering",
+        description="ChatGPT, LLama, BERT integration. Fine-tuning models, prompt engineering, RAG systems.",
+        category="AI",
+        is_free=False,
+        tools=["Hugging Face", "OpenAI API", "LangChain", "Llama", "Prompt Engineering"],
+        internship=True,
+        certification=True,
+        duration="6 weeks"
+    ),
 ]
 jobs = [
     JobPost(id=1, title="Junior Python Trainer", company="Sunshine Aura AI", location="Remote", job_type="Full-time", description="Teach Python and AI to corporate teams."),
