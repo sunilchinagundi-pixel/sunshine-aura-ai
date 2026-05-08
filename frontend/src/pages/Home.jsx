@@ -90,7 +90,7 @@ export default function Home() {
       <div className="callback-section">
         <div className="callback-card">
           <h2>Request a Callback</h2>
-          <p>Enter your details and our team will contact you with course guidance and enrollment assistance.</p>
+          <p>Enter your details and our team will contact you with course guidance and placement assistance.</p>
           <form onSubmit={submitCallback}>
             <input name="name" type="text" placeholder="Full Name" value={callback.name} onChange={handleCallbackChange} required />
             <input name="email" type="email" placeholder="Email Address" value={callback.email} onChange={handleCallbackChange} required />
